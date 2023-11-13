@@ -24,7 +24,7 @@ def index():
             #  iterating over the comment section to get the details of customer and their comments
             for commentbox in commentboxes:
                 try:
-                    name = commentbox.find('b',attrs={'class':'mr-2'}).text
+                    name = commentbox.find('p',attrs={'class':'profile-name'}).text
 
                 except:
                     name = 'No Name'
@@ -46,6 +46,9 @@ def index():
     else:
         return render_template('index.html')
 
+@app.route('/contactme.html')
+def contactme():
+    return render_template('contactme.html')
 
 if __name__ == "__main__":
     app.run(port=8000,debug=True) # running the app on the local machine on port 8000
