@@ -1,54 +1,63 @@
-# doing necessary imports
+from flask import Flask, render_template, Response
+import cv2
+import json
+import os  # Import the os module
+import atexit
 
-from flask import Flask, render_template, request
-import requests
-from bs4 import BeautifulSoup
+app = Flask(__name__)
 
-app = Flask(__name__)  # initialising the flask app with the name 'app'
+# Get camera index from environment variable, default to 0
+camera_index = int(os.environ.get('CAMERA_INDEX', 0))
+cap = cv2.VideoCapture(camera_index)
 
-@app.route('/',methods=['POST','GET']) # route with allowed methods as POST and GET
+# Use relative path for the cascade classifier XML file
+cascade_path = "haarcascade_frontalface_default.xml"
+faceCascade = cv2.CascadeClassifier(cascade_path)
+
+def generate_frames():
+    while True:
+        ret, frame = cap.read()
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        faces = faceCascade.detectMultiScale(
+            gray,
+            scaleFactor=1.1,
+            minNeighbors=5,
+            minSize=(30, 30),
+            flags=cv2.CASCADE_SCALE_IMAGE
+        )
+
+        count = len(faces)
+
+        for (x, y, w, h) in faces:
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+        yield f"data: {json.dumps({'count': count})}\n\n"
+
+# Explicitly release video capture resources on application exit
+def release_resources():
+    cap.release()
+
+# Register the release_resources function to be called on application exit
+atexit.register(release_resources)
+
+@app.route('/')
 def index():
-    if request.method == 'POST':
-        searchString = request.form['content'].replace(" ","") # obtaining the search string entered in the form
-        try:
-            url = "https://www.holidify.com/places/" + searchString
-            content = requests.get(url)
-            soup = BeautifulSoup(content.text, "html.parser")
-            link = 'https://www.holidify.com' + soup.find('a', attrs={'class': 'num-reviews'})['href']
-            content = requests.get(link)
-            soup = BeautifulSoup(content.text, "html.parser")
-            commentboxes = soup.find_all('div', attrs={'class': 'col-12 mb-30'})
-            commentboxes = commentboxes[:-1]
+    return render_template('index.html')
 
-            reviews = [] # initializing an empty list for reviews
-            #  iterating over the comment section to get the details of customer and their comments
-            for commentbox in commentboxes:
-                try:
-                    name = commentbox.find('p',attrs={'class':'profile-name'}).text
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-                except:
-                    name = 'No Name'
+@app.route('/update_count')
+def update_count():
+    return Response(generate_frames(), content_type='text/event-stream')
 
-                try:
-                    review = commentbox.find('div',attrs={'class':'readMoreSmall'}).text
-
-                except:
-                    review = 'No Review'
-
-                #fw.write(searchString+","+name.replace(",", ":")+","+rating + "," + commentHead.replace(",", ":") + "," + custComment.replace(",", ":") + "\n")
-                mydict = {"Place": searchString, "Name": name, "Review": review} # saving that detail to a dictionary
-                #x = table.insert_one(mydict) #insertig the dictionary containing the review comments to the collection
-                reviews.append(mydict) #  appending the comments to the review list
-            return render_template('results.html', reviews=reviews) # showing the review to the user
-        except:
-            return 'something is wrong'
-
-    else:
-        return render_template('index.html')
-
-@app.route('/contactme.html')
-def contactme():
-    return render_template('contactme.html')
-
-if __name__ == "__main__":
-    app.run(port=8000,debug=True) # running the app on the local machine on port 8000
+if __name__ == '__main__':
+    app.run(debug=True)
