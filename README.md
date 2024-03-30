@@ -23,14 +23,12 @@ The Holidify Review Scraper project aims to extract user reviews from the Holidi
    git clone https://github.com/piyush60629/Holidify-Web-Scraping.git
 
 ## Install Dependencies
-
-```bash
-pip install -r requirements.txt
+  
+      pip install -r requirements.txt
 
 ## Run the Flask Application
 
-```bash
-python app.py
+      python app.py
 
 ## Project Structure
 
