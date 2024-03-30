@@ -1,4 +1,53 @@
-# Holidify-Web-Scraping
-In the Holidify web scraping project, my contributions primarily revolved around extracting and presenting user reviews from the Holidify website. Here's a brief explanation of my role:
-1) Flask & Python: I employed Flask, a Python web framework, to set up the server-side components of the project. Python was instrumental in developing the web scraping script. This script was responsible for extracting user reviews and related data from the Holidify website.
-2) HTML & CSS: I utilized HTML and CSS to create the website's structure and design. This involved crafting the layout, styling elements, and ensuring a responsive design for a seamless user experience.
+# Holidify Review Scraper
+
+## Project Description
+The Holidify Review Scraper project aims to extract user reviews from the Holidify website and present them in a user-friendly interface. The project utilizes web scraping techniques to gather reviews from the website and presents them on a custom-built website for easy access and navigation.
+
+## Technologies Used
+- Flask
+- Python
+- HTML
+- CSS
+- BeautifulSoup
+- Requests
+
+## Features
+- **Review Extraction:** The project extracts user reviews from the Holidify website using web scraping techniques.
+- **User Interface:** A custom-built website is created to display the extracted reviews in a user-friendly format.
+- **Search Functionality:** Users can search for specific destinations or keywords within the reviews.
+- **Responsive Design:** The website is designed to be responsive, ensuring optimal viewing experience across different devices.
+
+## Getting Started
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/piyush60629/Holidify-Web-Scraping.git
+
+## Install Dependencies
+
+```bash
+pip install -r requirements.txt
+
+## Run the Flask Application
+
+```bash
+python app.py
+
+## Project Structure
+
+- **app.py:** Main Flask application file containing route definitions and server configurations.
+- **templates/:** Directory containing HTML templates for rendering the website pages.
+- **static/:** Directory containing static files such as CSS stylesheets and JavaScript files.
+
+## Contributions
+
+My contributions to this project primarily involved:
+- Developing the web scraping script to extract user reviews from the Holidify website.
+- Setting up the Flask application and defining routes for rendering the website pages.
+- Designing and styling the website interface using HTML and CSS for optimal user experience.
+
+## Future Enhancements
+
+- Integration with a database to store and retrieve scraped reviews for faster access.
+- Implementation of additional features such as sorting and filtering options for reviews.
+- Improving the web scraping script for better efficiency and accuracy in extracting reviews.
+  
